@@ -1,7 +1,7 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-ARG EUFY_SECURITY_WS_VERSION
+ARG EUFY_SECURITY_WS_SOURCE
 
 WORKDIR /usr/src/app
 RUN \
@@ -16,7 +16,7 @@ RUN \
     # Fail the build if the base ever regresses below Node 24.
     && case "$(node --version)" in v24.*) ;; *) echo "Expected Node 24, got $(node --version)" >&2; exit 1 ;; esac \
     && npm install --force \
-    "eufy-security-ws@${EUFY_SECURITY_WS_VERSION}"
+    "${EUFY_SECURITY_WS_SOURCE}"
 
 COPY run.sh /
 RUN chmod a+x /run.sh
