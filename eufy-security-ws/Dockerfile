@@ -1,26 +1,24 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-ARG EUFY_SECURITY_WS_SOURCE
-
 WORKDIR /usr/src/app
+
+COPY eufy-security-ws-3.1.0.tgz /tmp/eufy-security-ws-3.1.0.tgz
+
 RUN \
     set -x \
-    # The Alpine 3.23 base image (see build.yaml) ships Node.js 24 in its main
-    # repository, so nodejs/npm install directly with no edge-repo workarounds.
     && apk add --no-cache \
-	git \
         jq \
         nodejs \
         npm \
     && node --version \
-    # Fail the build if the base ever regresses below Node 24.
     && case "$(node --version)" in v24.*) ;; *) echo "Expected Node 24, got $(node --version)" >&2; exit 1 ;; esac \
-    && npm install --force \
-    "${EUFY_SECURITY_WS_SOURCE}"
+    && npm install --force /tmp/eufy-security-ws-3.1.0.tgz \
+    && rm /tmp/eufy-security-ws-3.1.0.tgz
 
 COPY run.sh /
 RUN chmod a+x /run.sh
+
 WORKDIR /data
 
-CMD [ "/run.sh" ]
+CMD ["/run.sh"]
